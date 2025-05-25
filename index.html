@@ -439,7 +439,139 @@
                 
                 if (unvisited.length === 0) return null;
 
-                // Oblicz prawdopodobieństwa
+                // Jeśli wszystkie mrówki zakończyły trasę
+                if (allFinished) {
+                    // Znajdź najlepszą mrówkę
+                    for (let ant of ants) {
+                        if (ant.distance < bestDistance) {
+                            bestDistance = ant.distance;
+                            bestPath = [...ant.visited];
+                            document.getElementById('bestPath').textContent = 
+                                bestDistance.toFixed(2) + ' jednostek';
+                        }
+                        ant.depositPheromone();
+                    }
+                    
+                    // Parowanie feromonów
+                    evaporatePheromones();
+                    
+                    // Nowa iteracja
+                    iteration++;
+                    document.getElementById('iteration').textContent = iteration;
+                    
+                    // Reset mrówek
+                    initializeAnts();
+                    
+                    // Uruchom Gruntora po znalezieniu ścieżki
+                    if (bestPath && !gruntor) {
+                        gruntor = true;
+                        animateGruntor();
+                    }
+                }
+            }
+            
+            // Aktualizacja aktualnej długości ścieżki
+            if (ants.length > 0) {
+                const avgDistance = ants.reduce((sum, ant) => sum + ant.distance, 0) / ants.length;
+                document.getElementById('currentPath').textContent = avgDistance.toFixed(2) + ' jednostek';
+            }
+            
+            drawMap();
+            animationId = requestAnimationFrame(animate);
+        }
+
+        function animateGruntor() {
+            if (!bestPath || gruntorProgress >= 100) {
+                if (gruntorProgress >= 100) {
+                    showVictoryMessage();
+                }
+                return;
+            }
+            
+            gruntorProgress += 0.5 * params.speed;
+            
+            if (gruntorProgress < 100) {
+                setTimeout(animateGruntor, 50);
+            } else {
+                showVictoryMessage();
+            }
+        }
+
+        function showVictoryMessage() {
+            const message = `Gruntor pokonał ${bestDistance.toFixed(2)} jednostek w ${iteration} iteracjach! 
+            Dzięki mądrości mrówek uratował księżniczkę Lilianę. 
+            Smok Skaldra został pokonany, a królestwo Verdantii znów jest bezpieczne!`;
+            
+            document.getElementById('victoryMessage').textContent = message;
+            document.getElementById('messageBox').style.display = 'block';
+        }
+
+        function closeMessage() {
+            document.getElementById('messageBox').style.display = 'none';
+        }
+
+        // Event listeners dla kontrolek
+        document.getElementById('antCount').addEventListener('input', updateControls);
+        document.getElementById('alpha').addEventListener('input', updateControls);
+        document.getElementById('beta').addEventListener('input', updateControls);
+        document.getElementById('evaporation').addEventListener('input', updateControls);
+        document.getElementById('speed').addEventListener('input', updateControls);
+
+        // Tooltip dla canvas
+        canvas = document.getElementById('mapCanvas');
+        ctx = canvas.getContext('2d');
+        const tooltip = document.getElementById('tooltip');
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Sprawdź czy kursor jest nad węzłem
+            for (let node of nodes) {
+                const distance = Math.sqrt((x - node.x) ** 2 + (y - node.y) ** 2);
+                if (distance < 20) {
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = e.clientX + 10 + 'px';
+                    tooltip.style.top = e.clientY - 30 + 'px';
+                    tooltip.textContent = node.name;
+                    return;
+                }
+            }
+            
+            tooltip.style.display = 'none';
+        });
+
+        // Inicjalizacja
+        window.onload = function() {
+            updateControls();
+            resetSimulation();
+            
+            // Pokaż wiadomość powitalną
+            setTimeout(() => {
+                alert('Witaj w baśniowej symulacji algorytmu mrówkowego! \n\n' +
+                      '1. Kliknij START aby rozpocząć poszukiwanie drogi\n' +
+                      '2. Obserwuj jak mrówki znajdują najkrótszą trasę\n' +
+                      '3. Po znalezieniu drogi, Gruntor automatycznie wyruszy ratować księżniczkę!\n\n' +
+                      'Możesz zmieniać parametry algorytmu w panelu po prawej stronie.');
+            }, 500);
+        };
+
+        // Responsywność canvas
+        function resizeCanvas() {
+            const container = document.querySelector('.canvas-container');
+            const maxWidth = container.clientWidth - 40;
+            const scale = Math.min(1, maxWidth / 900);
+            
+            canvas.style.transform = `scale(${scale})`;
+            canvas.style.transformOrigin = 'top left';
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+    </script>
+</body>
+</html> Oblicz prawdopodobieństwa
                 const probabilities = [];
                 let sum = 0;
 
