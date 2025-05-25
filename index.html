@@ -3,1716 +3,804 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Baśń o Mrówczej Królowej - Algorytm Mrówkowy</title>
+    <title>Baśń o Mrówczej Królowej i Dzielnym Ogrze</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            overflow-x: hidden;
-            min-height: 100vh;
+            font-family: 'Georgia', serif;
+            background-color: #f0f8e6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-image: url('https://img.freepik.com/free-vector/hand-painted-watercolor-pastel-sky-background_23-2148902771.jpg');
+            background-size: cover;
         }
-
+        
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.85);
             border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         }
-
-        .header h1 {
+        
+        h1, h2 {
+            color: #5a3921;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
-
-        .story-intro {
-            background: rgba(0, 20, 40, 0.7);
+        
+        h2 {
+            font-size: 1.8em;
+            margin-top: 0;
+        }
+        
+        .story {
+            background-color: rgba(255, 253, 245, 0.7);
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 20px;
-            font-style: italic;
-            text-align: center;
-            line-height: 1.6;
+            border-left: 5px solid #8b5a2b;
         }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        @media (max-width: 968px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .canvas-container {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            position: relative;
-        }
-
-        canvas {
-            border: 2px solid #FFD700;
-            border-radius: 10px;
-            background: #0a1929;
-            width: 100%;
-            height: auto;
-            display: block;
-            cursor: pointer;
-        }
-
-        .controls {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-
-        .control-group {
-            margin-bottom: 20px;
-        }
-
-        .control-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #FFD700;
-        }
-
-        .control-group input[type="range"] {
-            width: 100%;
-            margin-bottom: 5px;
-        }
-
-        .control-group span {
-            display: inline-block;
-            width: 40px;
-            text-align: right;
-            color: #87CEEB;
-        }
-
-        .button-group {
+        
+        #simulation-container {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        button {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn-start {
-            background: linear-gradient(45deg, #27ae60, #2ecc71);
-            color: white;
-        }
-
-        .btn-start:hover {
-            background: linear-gradient(45deg, #2ecc71, #27ae60);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-stop {
-            background: linear-gradient(45deg, #e74c3c, #c0392b);
-            color: white;
-        }
-
-        .btn-stop:hover {
-            background: linear-gradient(45deg, #c0392b, #e74c3c);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-reset {
-            background: linear-gradient(45deg, #3498db, #2980b9);
-            color: white;
-        }
-
-        .btn-reset:hover {
-            background: linear-gradient(45deg, #2980b9, #3498db);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .stats {
-            background: rgba(0, 20, 40, 0.7);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding: 5px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stat-item:last-child {
-            border-bottom: none;
-        }
-
-        .stat-label {
-            color: #FFD700;
-        }
-
-        .stat-value {
-            color: #87CEEB;
-            font-weight: bold;
-        }
-
-        .legend {
-            background: rgba(0, 20, 40, 0.7);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-        }
-
-        .legend-item {
-            display: flex;
+            flex-direction: column;
             align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            margin-right: 10px;
-            border: 2px solid white;
-        }
-
-        .message-box {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            padding: 30px;
-            border-radius: 15px;
-            border: 3px solid #FFD700;
-            text-align: center;
-            display: none;
-            z-index: 1000;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-        }
-
-        .message-box h2 {
-            color: #FFD700;
-            margin-bottom: 15px;
-        }
-
-        .message-box p {
-            line-height: 1.6;
             margin-bottom: 20px;
         }
-
-        .message-box button {
-            padding: 10px 30px;
-            background: #FFD700;
-            color: #000;
-            border: none;
+        
+        #canvas-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        canvas {
+            border: 3px solid #8b5a2b;
+            border-radius: 10px;
+            background-color: #f9f4e6;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            background-color: rgba(245, 245, 220, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 150px;
+        }
+        
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #5a3921;
+        }
+        
+        input, select, button {
+            padding: 8px;
             border-radius: 5px;
+            border: 1px solid #8b5a2b;
+            background-color: #fffdf5;
+        }
+        
+        button {
+            background-color: #8b5a2b;
+            color: white;
             cursor: pointer;
             font-weight: bold;
+            transition: background-color 0.3s;
         }
-
-        /* Animacje */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        
+        button:hover {
+            background-color: #6d4621;
         }
-
-        .pulse {
-            animation: pulse 2s infinite;
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            background-color: rgba(210, 180, 140, 0.3);
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
         }
-
-        /* Tooltip */
-        .tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            pointer-events: none;
+        
+        .stat-item {
+            text-align: center;
+            min-width: 100px;
+            margin: 5px;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #5a3921;
+        }
+        
+        #result {
+            background-color: rgba(255, 253, 245, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
             display: none;
-            z-index: 100;
+            border-left: 5px solid #5a3921;
+        }
+        
+        .character {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            z-index: 10;
+        }
+        
+        #gruntor {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%234CAF50"/><circle cx="35" cy="40" r="5" fill="black"/><circle cx="65" cy="40" r="5" fill="black"/><path d="M30,65 Q50,80 70,65" stroke="black" stroke-width="3" fill="none"/></svg>');
+        }
+        
+        #liliana {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="30" fill="%23FFD700"/><path d="M40,70 L60,70 L55,90 L45,90 Z" fill="%23FF69B4"/><circle cx="40" cy="35" r="3" fill="black"/><circle cx="60" cy="35" r="3" fill="black"/><path d="M45,50 Q50,55 55,50" stroke="black" stroke-width="2" fill="none"/></svg>');
+        }
+        
+        #dragon {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,50 Q30,20 50,30 Q70,20 80,50 Q70,80 50,70 Q30,80 20,50 Z" fill="%23FF4500"/><path d="M80,50 Q85,30 95,20" stroke="black" stroke-width="2" fill="none"/><circle cx="65" cy="45" r="3" fill="black"/><circle cx="75" cy="45" r="3" fill="black"/></svg>');
+        }
+        
+        .ant {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="black"/></svg>');
+            background-size: contain;
+            z-index: 5;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .control-group {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🏰 Baśń o Mrówczej Królowej 🐜</h1>
-            <p>Pomóż ogrowi Gruntorowi uratować księżniczkę Lilianę!</p>
+        <h1>Baśń o Mrówczej Królowej, Dzielnym Ogrze i Smoku z Gór Mglistych</h1>
+        <h2>Symulator Algorytmu Mrówkowego</h2>
+        
+        <div class="story">
+            <p>W królestwie Verdantii dzielny ogr Gruntor musi uratować księżniczkę Lilianę, porwaną przez smoka Skaldrę Czarnopłomyka. Pomagają mu mrówki z Najwyższego Mrowiska, które wykorzystują feromony, aby znaleźć najkrótszą i najbezpieczniejszą drogę przez Labirynt Pięciu Dolin.</p>
+            <p>Użyj suwaków, aby zmienić parametry algorytmu mrówkowego, a następnie kliknij "Rozpocznij Symulację", aby pomóc Gruntorowi dotrzeć do Baszty Zmierzchu!</p>
         </div>
-
-        <div class="story-intro">
-            <p>W królestwie Verdantii smok Skaldra porwał księżniczkę Lilianę. 
-            Dzielny ogr Gruntor wyrusza na ratunek, ale labirynt jest zbyt skomplikowany! 
-            Na szczęście mądra królowa mrówek Myrmidia wysyła swoje zwiadowczynie, 
-            by znaleźć najkrótszą drogę do Baszty Zmierzchu...</p>
-        </div>
-
-        <div class="main-content">
-            <div class="canvas-container">
-                <canvas id="mapCanvas" width="900" height="600"></canvas>
-                <div class="tooltip" id="tooltip"></div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="antCount">Liczba mrówek:</label>
+                <input type="number" id="antCount" min="1" max="200" value="20">
             </div>
-
-            <div class="controls">
-                <h3>⚙️ Parametry Algorytmu</h3>
-                
-                <div class="control-group">
-                    <label for="antCount">Liczba mrówek: <span id="antCountValue">50</span></label>
-                    <input type="range" id="antCount" min="10" max="200" value="50" step="10">
-                </div>
-
-                <div class="control-group">
-                    <label for="alpha">Alfa (wpływ feromonu): <span id="alphaValue">1.0</span></label>
-                    <input type="range" id="alpha" min="0" max="3" value="1" step="0.1">
-                </div>
-
-                <div class="control-group">
-                    <label for="beta">Beta (wpływ odległości): <span id="betaValue">2.0</span></label>
-                    <input type="range" id="beta" min="0" max="5" value="2" step="0.1">
-                </div>
-
-                <div class="control-group">
-                    <label for="evaporation">Parowanie feromonu: <span id="evaporationValue">0.1</span></label>
-                    <input type="range" id="evaporation" min="0" max="1" value="0.1" step="0.05">
-                </div>
-
-                <div class="control-group">
-                    <label for="speed">Szybkość animacji: <span id="speedValue">5</span></label>
-                    <input type="range" id="speed" min="1" max="10" value="5" step="1">
-                </div>
-
-                <div class="button-group">
-                    <button class="btn-start" onclick="startSimulation()">▶️ Start</button>
-                    <button class="btn-stop" onclick="stopSimulation()">⏸️ Stop</button>
-                    <button class="btn-reset" onclick="resetSimulation()">🔄 Reset</button>
-                </div>
-
-                <div class="stats">
-                    <h3>📊 Statystyki</h3>
-                    <div class="stat-item">
-                        <span class="stat-label">Iteracja:</span>
-                        <span class="stat-value" id="iteration">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Najkrótsza ścieżka:</span>
-                        <span class="stat-value" id="bestPath">-</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Aktualna długość:</span>
-                        <span class="stat-value" id="currentPath">-</span>
-                    </div>
-                </div>
-
-                <div class="legend">
-                    <h3>🗺️ Legenda</h3>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #4CAF50;"></div>
-                        <span>Bagna (start Gruntora)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #FF6B6B;"></div>
-                        <span>Baszta Zmierzchu (cel)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #FFD700;"></div>
-                        <span>Mrowisko królowej</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #87CEEB;"></div>
-                        <span>Punkty orientacyjne</span>
-                    </div>
-                </div>
+            
+            <div class="control-group">
+                <label for="alpha">Wpływ feromonów (α):</label>
+                <input type="number" id="alpha" min="0" max="10" step="0.1" value="1">
+            </div>
+            
+            <div class="control-group">
+                <label for="beta">Wpływ odległości (β):</label>
+                <input type="number" id="beta" min="0" max="10" step="0.1" value="2">
+            </div>
+            
+            <div class="control-group">
+                <label for="evaporation">Parowanie feromonów (ρ):</label>
+                <input type="number" id="evaporation" min="0" max="1" step="0.01" value="0.5">
+            </div>
+            
+            <div class="control-group">
+                <label for="iterations">Maksymalna liczba iteracji:</label>
+                <input type="number" id="iterations" min="1" max="1000" value="100">
+            </div>
+            
+            <button id="startBtn">Rozpocznij Symulację</button>
+            <button id="resetBtn">Resetuj</button>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div>Iteracja:</div>
+                <div class="stat-value" id="iteration">0</div>
+            </div>
+            <div class="stat-item">
+                <div>Najkrótsza ścieżka:</div>
+                <div class="stat-value" id="bestPath">-</div>
+            </div>
+            <div class="stat-item">
+                <div>Mrówki w drodze:</div>
+                <div class="stat-value" id="antsActive">0</div>
             </div>
         </div>
-    </div>
-
-    <div class="message-box" id="messageBox">
-        <h2>🎉 Zwycięstwo! 🎉</h2>
-        <p id="victoryMessage">Gruntor dotarł do Baszty Zmierzchu!</p>
-        <button onclick="closeMessage()">Zamknij</button>
+        
+        <div id="simulation-container">
+            <div id="canvas-container">
+                <canvas id="simulationCanvas" width="800" height="600"></canvas>
+                <div id="gruntor" class="character"></div>
+                <div id="liliana" class="character"></div>
+                <div id="dragon" class="character"></div>
+            </div>
+        </div>
+        
+        <div id="result">
+            <h3>Epilog</h3>
+            <p id="resultText"></p>
+        </div>
     </div>
 
     <script>
-        // Dane grafu z baśni
-        const nodes = [
-            { id: "MR1", name: "Najwyższe Mrowisko", x: 150, y: 350 },
-            { id: "BG1", name: "Bagna Koralowe (start Gruntora)", x: 180, y: 500 },
-            { id: "RC1", name: "Bród – Rzeka Dwóch Cieni", x: 450, y: 400 },
-            { id: "LB1", name: "Labirynt Pięciu Dolin (centrum)", x: 500, y: 300 },
-            { id: "BST", name: "Baszta Zmierzchu – Góry Mgliste", x: 770, y: 140 },
-            { id: "CT1", name: "Zamek Główny Verdantii", x: 730, y: 470 }
-        ];
-
-        const edges = [
-            { from: "BG1", to: "RC1", dist: 53.58 },
-            { from: "MR1", to: "LB1", dist: 41.83 },
-            { from: "RC1", to: "LB1", dist: 10.00 },
-            { from: "LB1", to: "BST", dist: 77.11 },
-            { from: "MR1", to: "BG1", dist: 90.11 },
-            { from: "BG1", to: "CT1", dist: 17.78 },
-            { from: "CT1", to: "LB1", dist: 68.00 },
-            { from: "MR1", to: "RC1", dist: 54.08 },
-            { from: "BST", to: "CT1", dist: 113.07 }
-        ];
-
-        // Zmienne globalne
-        let canvas, ctx;
-        let pheromones = {};
-        let ants = [];
-        let bestPath = null;
-        let bestDistance = Infinity;
-        let iteration = 0;
-        let isRunning = false;
-        let animationId = null;
-        let gruntor = null;
-        let gruntorProgress = 0;
-
-        // Parametry algorytmu
-        let params = {
-            antCount: 50,
-            alpha: 1.0,
-            beta: 2.0,
-            evaporation: 0.1,
-            Q: 100,
-            speed: 5
+        // Dane z baśni w formacie JSON
+        const graphData = {
+            "nodes": [
+                { "id": "MR1", "name": "Najwyższe Mrowisko", "x": 150, "y": 350 },
+                { "id": "BG1", "name": "Bagna Koralowe (start Gruntora)", "x": 180, "y": 1250 },
+                { "id": "RC1", "name": "Bród – Rzeka Dwóch Cieni", "x": 450, "y": 800 },
+                { "id": "LB1", "name": "Labirynt Pięciu Dolin (centrum)", "x": 500, "y": 700 },
+                { "id": "BST", "name": "Baszta Zmierzchu – Góry Mgliste", "x": 870, "y": 240 },
+                { "id": "CT1", "name": "Zamek Główny Verdantii", "x": 830, "y": 1370 }
+            ],
+            "edges": [
+                { "from": "BG1", "to": "RC1", "dist": 53.58 },
+                { "from": "MR1", "to": "LB1", "dist": 41.83 },
+                { "from": "RC1", "to": "LB1", "dist": 10.00 },
+                { "from": "LB1", "to": "BST", "dist": 77.11 },
+                { "from": "MR1", "to": "BG1", "dist": 90.11 },
+                { "from": "BG1", "to": "CT1", "dist": 17.78 },
+                { "from": "CT1", "to": "LB1", "dist": 68.00 },
+                { "from": "MR1", "to": "RC1", "dist": 54.08 },
+                { "from": "BST", "to": "CT1", "dist": 113.07 }
+            ]
         };
 
-        // Klasa Mrówka
-        class Ant {
-            constructor(startNode) {
-                this.currentNode = startNode;
-                this.visited = [startNode];
-                this.distance = 0;
-                this.x = nodes.find(n => n.id === startNode).x;
-                this.y = nodes.find(n => n.id === startNode).y;
-                this.targetX = this.x;
-                this.targetY = this.y;
-                this.moving = false;
-                this.speed = 2 + Math.random() * 2;
-            }
+        // Skalowanie pozycji węzłów do rozmiaru canvas
+        function scalePositions() {
+            const canvas = document.getElementById('simulationCanvas');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Znajdź min i max dla x i y
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            graphData.nodes.forEach(node => {
+                minX = Math.min(minX, node.x);
+                maxX = Math.max(maxX, node.x);
+                minY = Math.min(minY, node.y);
+                maxY = Math.max(maxY, node.y);
+            });
+            
+            // Dodaj margines
+            const margin = 50;
+            minX -= margin;
+            maxX += margin;
+            minY -= margin;
+            maxY += margin;
+            
+            // Skaluj pozycje
+            const scaleX = width / (maxX - minX);
+            const scaleY = height / (maxY - minY);
+            const scale = Math.min(scaleX, scaleY);
+            
+            graphData.nodes.forEach(node => {
+                node.scaledX = (node.x - minX) * scale;
+                node.scaledY = (node.y - minY) * scale;
+            });
+            
+            // Ustaw pozycje postaci
+            const gruntorStart = graphData.nodes.find(n => n.id === "BG1");
+            const lilianaPos = graphData.nodes.find(n => n.id === "BST");
+            const dragonPos = graphData.nodes.find(n => n.id === "BST");
+            
+            document.getElementById('gruntor').style.left = (gruntorStart.scaledX - 15) + 'px';
+            document.getElementById('gruntor').style.top = (gruntorStart.scaledY - 15) + 'px';
+            
+            document.getElementById('liliana').style.left = (lilianaPos.scaledX - 15) + 'px';
+            document.getElementById('liliana').style.top = (lilianaPos.scaledY - 15) + 'px';
+            
+            document.getElementById('dragon').style.left = (dragonPos.scaledX - 15) + 'px';
+            document.getElementById('dragon').style.top = (dragonPos.scaledY - 15) + 'px';
+        }
 
-            selectNextNode() {
-                const neighbors = getNeighbors(this.currentNode);
-                const unvisited = neighbors.filter(n => !this.visited.includes(n.id));
+        // Inicjalizacja grafiki
+        function initGraphics() {
+            const canvas = document.getElementById('simulationCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Tło
+            ctx.fillStyle = '#f9f4e6';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Rysuj krawędzie
+            ctx.strokeStyle = '#8b5a2b';
+            ctx.lineWidth = 2;
+            
+            graphData.edges.forEach(edge => {
+                const fromNode = graphData.nodes.find(n => n.id === edge.from);
+                const toNode = graphData.nodes.find(n => n.id === edge.to);
                 
-                if (unvisited.length === 0) return null;
+                ctx.beginPath();
+                ctx.moveTo(fromNode.scaledX, fromNode.scaledY);
+                ctx.lineTo(toNode.scaledX, toNode.scaledY);
+                ctx.stroke();
+                
+                // Etykieta odległości
+                const midX = (fromNode.scaledX + toNode.scaledX) / 2;
+                const midY = (fromNode.scaledY + toNode.scaledY) / 2;
+                
+                ctx.fillStyle = '#5a3921';
+                ctx.font = '10px Arial';
+                ctx.fillText(edge.dist.toFixed(2), midX, midY);
+            });
+            
+            // Rysuj węzły
+            graphData.nodes.forEach(node => {
+                ctx.fillStyle = '#8b5a2b';
+                ctx.beginPath();
+                ctx.arc(node.scaledX, node.scaledY, 8, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#5a3921';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(node.name, node.scaledX, node.scaledY - 15);
+            });
+        }
 
-                // Oblicz prawdopodobieństwa
-                const probabilities = [];
-                let sum = 0;
-
-                for (let neighbor of unvisited) {
-                    const edge = getEdge(this.currentNode, neighbor.id);
-                    const pheromone = getPheromone(this.currentNode, neighbor.id);
-                    const visibility = 1 / edge.dist;
-                    
-                    const prob = Math.pow(pheromone, params.alpha) * Math.pow(visibility, params.beta);
-                    probabilities.push({ node: neighbor.id, prob: prob });
-                    sum += prob;
+        // Implementacja algorytmu mrówkowego
+        class AntColonyOptimization {
+            constructor(graph, params) {
+                this.graph = graph;
+                this.params = params;
+                this.pheromones = {};
+                this.bestPath = null;
+                this.bestPathLength = Infinity;
+                this.iteration = 0;
+                this.ants = [];
+                this.activeAnts = 0;
+                
+                // Inicjalizacja feromonów
+                this.initPheromones();
+            }
+            
+            initPheromones() {
+                this.graph.edges.forEach(edge => {
+                    const key1 = `${edge.from}-${edge.to}`;
+                    const key2 = `${edge.to}-${edge.from}`;
+                    this.pheromones[key1] = 1;
+                    this.pheromones[key2] = 1;
+                });
+            }
+            
+            runIteration() {
+                this.iteration++;
+                this.activeAnts = this.params.antCount;
+                this.ants = [];
+                
+                // Tworzenie mrówek
+                for (let i = 0; i < this.params.antCount; i++) {
+                    this.ants.push(this.createAnt());
                 }
-
-                // Wybierz węzeł na podstawie prawdopodobieństwa
-                let random = Math.random() * sum;
-                for (let p of probabilities) {
-                    random -= p.prob;
-                    if (random <= 0) {
+                
+                // Symulacja ruchu mrówek
+                const antMovements = setInterval(() => {
+                    let antsFinished = 0;
+                    
+                    this.ants.forEach(ant => {
+                        if (ant.finished) {
+                            antsFinished++;
+                            return;
+                        }
+                        
+                        this.moveAnt(ant);
+                    });
+                    
+                    if (antsFinished === this.ants.length) {
+                        clearInterval(antMovements);
+                        this.updatePheromones();
+                        this.activeAnts = 0;
+                        updateStats();
+                        
+                        // Jeśli nie znaleziono jeszcze ścieżki, uruchom kolejną iterację
+                        if (this.bestPath === null && this.iteration < this.params.iterations) {
+                            setTimeout(() => this.runIteration(), 500);
+                        } else {
+                            finishSimulation();
+                        }
+                    } else {
+                        updateStats();
+                        drawSimulation();
+                    }
+                }, 100);
+            }
+            
+            createAnt() {
+                return {
+                    path: ['BG1'], // Start z Bagien Koralowych
+                    visited: new Set(['BG1']),
+                    finished: false,
+                    currentPosition: 'BG1',
+                    nextNode: null,
+                    progress: 0,
+                    reachedDestination: false
+                };
+            }
+            
+            moveAnt(ant) {
+                if (ant.finished) return;
+                
+                // Jeśli mrówka jest w trakcie przechodzenia między węzłami
+                if (ant.nextNode) {
+                    ant.progress += 0.1; // Szybkość ruchu
+                    
+                    if (ant.progress >= 1) {
+                        // Dotarła do następnego węzła
+                        ant.currentPosition = ant.nextNode;
+                        ant.path.push(ant.nextNode);
+                        ant.visited.add(ant.nextNode);
+                        ant.nextNode = null;
+                        ant.progress = 0;
+                        
+                        // Sprawdź czy dotarła do celu
+                        if (ant.currentPosition === 'BST') {
+                            ant.finished = true;
+                            ant.reachedDestination = true;
+                            this.updateBestPath(ant);
+                            return;
+                        }
+                    }
+                } else {
+                    // Wybierz następny węzeł
+                    const nextNode = this.chooseNextNode(ant);
+                    
+                    if (nextNode) {
+                        ant.nextNode = nextNode;
+                    } else {
+                        // Brak dostępnych węzłów - ślepa uliczka
+                        ant.finished = true;
+                    }
+                }
+            }
+            
+            chooseNextNode(ant) {
+                const currentNode = ant.currentPosition;
+                const possibleEdges = this.graph.edges.filter(edge => 
+                    edge.from === currentNode && !ant.visited.has(edge.to) ||
+                    edge.to === currentNode && !ant.visited.has(edge.from)
+                );
+                
+                if (possibleEdges.length === 0) return null;
+                
+                // Oblicz prawdopodobieństwa dla każdej możliwej krawędzi
+                const probabilities = [];
+                let total = 0;
+                
+                possibleEdges.forEach(edge => {
+                    const nextNode = edge.from === currentNode ? edge.to : edge.from;
+                    const key = `${currentNode}-${nextNode}`;
+                    const pheromone = this.pheromones[key] || 1;
+                    const distance = edge.dist;
+                    
+                    const probability = Math.pow(pheromone, this.params.alpha) * 
+                                      Math.pow(1 / distance, this.params.beta);
+                    probabilities.push({ node: nextNode, probability });
+                    total += probability;
+                });
+                
+                // Normalizuj prawdopodobieństwa
+                probabilities.forEach(p => p.probability /= total);
+                
+                // Wybierz następny węzeł na podstawie prawdopodobieństwa
+                let random = Math.random();
+                let sum = 0;
+                
+                for (const p of probabilities) {
+                    sum += p.probability;
+                    if (random <= sum) {
                         return p.node;
                     }
                 }
-
+                
                 return probabilities[0].node;
             }
-
-            move() {
-                if (this.currentNode === "BST") return; // Dotarł do celu
-
-                const nextNode = this.selectNextNode();
-                if (!nextNode) return;
-
-                const edge = getEdge(this.currentNode, nextNode);
-                this.distance += edge.dist;
-                this.currentNode = nextNode;
-                this.visited.push(nextNode);
-
-                const targetNode = nodes.find(n => n.id === nextNode);
-                this.targetX = targetNode.x;
-                this.targetY = targetNode.y;
-                this.moving = true;
-            }
-
-            updatePosition() {
-                if (!this.moving) return;
-
-                const dx = this.targetX - this.x;
-                const dy = this.targetY - this.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < this.speed) {
-                    this.x = this.targetX;
-                    this.y = this.targetY;
-                    this.moving = false;
-                } else {
-                    this.x += (dx / distance) * this.speed * params.speed;
-                    this.y += (dy / distance) * this.speed * params.speed;
+            
+            updateBestPath(ant) {
+                if (!ant.reachedDestination) return;
+                
+                // Oblicz długość ścieżki
+                let pathLength = 0;
+                for (let i = 0; i < ant.path.length - 1; i++) {
+                    const from = ant.path[i];
+                    const to = ant.path[i+1];
+                    const edge = this.graph.edges.find(e => 
+                        (e.from === from && e.to === to) || (e.from === to && e.to === from));
+                    pathLength += edge.dist;
+                }
+                
+                // Sprawdź czy to najlepsza ścieżka
+                if (pathLength < this.bestPathLength) {
+                    this.bestPath = [...ant.path];
+                    this.bestPathLength = pathLength;
+                    document.getElementById('bestPath').textContent = pathLength.toFixed(2);
                 }
             }
-
-            depositPheromone() {
-                if (this.currentNode !== "BST") return;
-
-                const delta = params.Q / this.distance;
-                for (let i = 0; i < this.visited.length - 1; i++) {
-                    const from = this.visited[i];
-                    const to = this.visited[i + 1];
-                    const key = `${from}-${to}`;
-                    pheromones[key] = (pheromones[key] || 1) + delta;
+            
+            updatePheromones() {
+                // Parowanie feromonów
+                for (const key in this.pheromones) {
+                    this.pheromones[key] *= (1 - this.params.evaporation);
                 }
+                
+                // Dodawanie nowych feromonów przez mrówki
+                this.ants.forEach(ant => {
+                    if (!ant.reachedDestination) return;
+                    
+                    const deltaPheromone = 1 / this.calculatePathLength(ant.path);
+                    
+                    for (let i = 0; i < ant.path.length - 1; i++) {
+                        const from = ant.path[i];
+                        const to = ant.path[i+1];
+                        const key1 = `${from}-${to}`;
+                        const key2 = `${to}-${from}`;
+                        
+                        this.pheromones[key1] = (this.pheromones[key1] || 0) + deltaPheromone;
+                        this.pheromones[key2] = (this.pheromones[key2] || 0) + deltaPheromone;
+                    }
+                });
             }
-        }
-
-        // Funkcje pomocnicze
-        function getNeighbors(nodeId) {
-            const neighbors = [];
-            for (let edge of edges) {
-                if (edge.from === nodeId) {
-                    neighbors.push(nodes.find(n => n.id === edge.to));
-                } else if (edge.to === nodeId) {
-                    neighbors.push(nodes.find(n => n.id === edge.from));
+            
+            calculatePathLength(path) {
+                let length = 0;
+                for (let i = 0; i < path.length - 1; i++) {
+                    const from = path[i];
+                    const to = path[i+1];
+                    const edge = this.graph.edges.find(e => 
+                        (e.from === from && e.to === to) || (e.from === to && e.to === from));
+                    length += edge.dist;
                 }
-            }
-            return neighbors;
-        }
-
-        function getEdge(from, to) {
-            return edges.find(e => 
-                (e.from === from && e.to === to) || 
-                (e.from === to && e.to === from)
-            );
-        }
-
-        function getPheromone(from, to) {
-            const key1 = `${from}-${to}`;
-            const key2 = `${to}-${from}`;
-            return pheromones[key1] || pheromones[key2] || 1;
-        }
-
-        function evaporatePheromones() {
-            for (let key in pheromones) {
-                pheromones[key] *= (1 - params.evaporation);
-                if (pheromones[key] < 0.1) pheromones[key] = 0.1;
+                return length;
             }
         }
 
-        // Funkcje rysowania
-        function drawMap() {
+        // Funkcje do rysowania symulacji
+        function drawSimulation() {
+            const canvas = document.getElementById('simulationCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Wyczyść canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Tło z gradientem
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#0a1929');
-            gradient.addColorStop(1, '#1e3c72');
-            ctx.fillStyle = gradient;
+            // Narysuj tło
+            ctx.fillStyle = '#f9f4e6';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Rysuj mgłę
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-            for (let i = 0; i < 5; i++) {
-                ctx.beginPath();
-                ctx.arc(
-                    Math.random() * canvas.width, 
-                    Math.random() * canvas.height, 
-                    50 + Math.random() * 100, 
-                    0, 
-                    2 * Math.PI
-                );
-                ctx.fill();
-            }
-
-            // Rysuj krawędzie z feromonami
-            for (let edge of edges) {
-                const from = nodes.find(n => n.id === edge.from);
-                const to = nodes.find(n => n.id === edge.to);
+            
+            // Narysuj feromony
+            drawPheromones(ctx);
+            
+            // Narysuj krawędzie
+            ctx.strokeStyle = '#8b5a2b';
+            ctx.lineWidth = 2;
+            
+            graphData.edges.forEach(edge => {
+                const fromNode = graphData.nodes.find(n => n.id === edge.from);
+                const toNode = graphData.nodes.find(n => n.id === edge.to);
                 
                 ctx.beginPath();
-                ctx.moveTo(from.x, from.y);
-                ctx.lineTo(to.x, to.y);
-                
-                // Grubość linii zależna od feromonu
-                const pheromone = getPheromone(edge.from, edge.to);
-                ctx.lineWidth = Math.min(1 + pheromone / 5, 8);
-                
-                // Kolor zależny od feromonu
-                const intensity = Math.min(pheromone / 10, 1);
-                ctx.strokeStyle = `rgba(124, 252, 0, ${0.3 + intensity * 0.7})`;
+                ctx.moveTo(fromNode.scaledX, fromNode.scaledY);
+                ctx.lineTo(toNode.scaledX, toNode.scaledY);
                 ctx.stroke();
                 
-                // Dodaj świecące punkty na silnych ścieżkach
-                if (pheromone > 5) {
-                    ctx.shadowBlur = 20;
-                    ctx.shadowColor = '#7CFC00';
-                    ctx.stroke();
-                    ctx.shadowBlur = 0;
-                }
-            }
-
-            // Rysuj węzły
-            for (let node of nodes) {
+                // Etykieta odległości
+                const midX = (fromNode.scaledX + toNode.scaledX) / 2;
+                const midY = (fromNode.scaledY + toNode.scaledY) / 2;
+                
+                ctx.fillStyle = '#5a3921';
+                ctx.font = '10px Arial';
+                ctx.fillText(edge.dist.toFixed(2), midX, midY);
+            });
+            
+            // Narysuj węzły
+            graphData.nodes.forEach(node => {
+                ctx.fillStyle = '#8b5a2b';
                 ctx.beginPath();
-                ctx.arc(node.x, node.y, 20, 0, 2 * Math.PI);
-                
-                // Różne kolory dla różnych typów węzłów
-                if (node.id === "BG1") {
-                    ctx.fillStyle = '#4CAF50';
-                } else if (node.id === "BST") {
-                    ctx.fillStyle = '#FF6B6B';
-                } else if (node.id === "MR1") {
-                    ctx.fillStyle = '#FFD700';
-                } else {
-                    ctx.fillStyle = '#87CEEB';
-                }
-                
+                ctx.arc(node.scaledX, node.scaledY, 8, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.strokeStyle = 'white';
-                ctx.lineWidth = 2;
-                ctx.stroke();
                 
-                // Dodaj ikony
-                ctx.font = '16px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = 'black';
-                
-                if (node.id === "BG1") ctx.fillText('🐸', node.x, node.y);
-                else if (node.id === "BST") ctx.fillText('🐉', node.x, node.y);
-                else if (node.id === "MR1") ctx.fillText('🐜', node.x, node.y);
-                else if (node.id === "CT1") ctx.fillText('🏰', node.x, node.y);
-                else ctx.fillText('🌳', node.x, node.y);
-                
-                // Nazwa węzła
+                ctx.fillStyle = '#5a3921';
                 ctx.font = '12px Arial';
-                ctx.fillStyle = 'white';
-                ctx.fillText(node.name.split(' ')[0], node.x, node.y + 35);
-            }
+                ctx.textAlign = 'center';
+                ctx.fillText(node.name, node.scaledX, node.scaledY - 15);
+            });
+            
+            // Narysuj mrówki
+            drawAnts(ctx);
+            
+            // Narysuj najlepszą ścieżkę
+            drawBestPath(ctx);
+        }
 
-            // Rysuj najlepszą ścieżkę
-            if (bestPath && bestPath.length > 1) {
-                ctx.strokeStyle = '#FFD700';
-                ctx.lineWidth = 4;
-                ctx.setLineDash([10, 5]);
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = '#FFD700';
+        function drawPheromones(ctx) {
+            const maxPheromone = Math.max(...Object.values(aco.pheromones));
+            
+            graphData.edges.forEach(edge => {
+                const fromNode = graphData.nodes.find(n => n.id === edge.from);
+                const toNode = graphData.nodes.find(n => n.id === edge.to);
                 
-                ctx.beginPath();
-                const firstNode = nodes.find(n => n.id === bestPath[0]);
-                ctx.moveTo(firstNode.x, firstNode.y);
+                const key1 = `${edge.from}-${edge.to}`;
+                const key2 = `${edge.to}-${edge.from}`;
+                const pheromone = (aco.pheromones[key1] + aco.pheromones[key2]) / 2;
                 
-                for (let i = 1; i < bestPath.length; i++) {
-                    const node = nodes.find(n => n.id === bestPath[i]);
-                    ctx.lineTo(node.x, node.y);
-                }
-                
-                ctx.stroke();
-                ctx.setLineDash([]);
-                ctx.shadowBlur = 0;
-            }
-
-            // Rysuj mrówki
-            for (let ant of ants) {
-                ctx.beginPath();
-                ctx.arc(ant.x, ant.y, 5, 0, 2 * Math.PI);
-                ctx.fillStyle = '#FF69B4';
-                ctx.fill();
-                
-                // Dodaj świecenie
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = '#FF69B4';
-                ctx.fill();
-                ctx.shadowBlur = 0;
-            }
-
-            // Rysuj Gruntora
-            if (gruntor && bestPath) {
-                const progress = gruntorProgress / 100;
-                const pathIndex = Math.floor(progress * (bestPath.length - 1));
-                const t = (progress * (bestPath.length - 1)) % 1;
-                
-                if (pathIndex < bestPath.length - 1) {
-                    const from = nodes.find(n => n.id === bestPath[pathIndex]);
-                    const to = nodes.find(n => n.id === bestPath[pathIndex + 1]);
+                if (pheromone > 0) {
+                    const intensity = pheromone / maxPheromone;
+                    ctx.strokeStyle = `rgba(255, 215, 0, ${intensity})`;
+                    ctx.lineWidth = 3 + intensity * 5;
                     
-                    const x = from.x + (to.x - from.x) * t;
-                    const y = from.y + (to.y - from.y) * t;
-                    
-                    // Rysuj Gruntora
                     ctx.beginPath();
-                    ctx.arc(x, y, 25, 0, 2 * Math.PI);
-                    ctx.fillStyle = '#2ECC40';
-                    ctx.fill();
-                    ctx.strokeStyle = 'white';
-                    ctx.lineWidth = 3;
+                    ctx.moveTo(fromNode.scaledX, fromNode.scaledY);
+                    ctx.lineTo(toNode.scaledX, toNode.scaledY);
                     ctx.stroke();
-                    
-                    ctx.font = '30px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText('🧌', x, y);
                 }
-            }
+            });
         }
 
-        // Funkcje kontroli symulacji
-        function updateControls() {
-            document.getElementById('antCountValue').textContent = document.getElementById('antCount').value;
-            document.getElementById('alphaValue').textContent = document.getElementById('alpha').value;
-            document.getElementById('betaValue').textContent = document.getElementById('beta').value;
-            document.getElementById('evaporationValue').textContent = document.getElementById('evaporation').value;
-            document.getElementById('speedValue').textContent = document.getElementById('speed').value;
+        function drawAnts(ctx) {
+            aco.ants.forEach(ant => {
+                if (ant.finished) return;
+                
+                const currentNode = graphData.nodes.find(n => n.id === ant.currentPosition);
+                let x, y;
+                
+                if (ant.nextNode) {
+                    const nextNode = graphData.nodes.find(n => n.id === ant.nextNode);
+                    x = currentNode.scaledX + (nextNode.scaledX - currentNode.scaledX) * ant.progress;
+                    y = currentNode.scaledY + (nextNode.scaledY - currentNode.scaledY) * ant.progress;
+                } else {
+                    x = currentNode.scaledX;
+                    y = currentNode.scaledY;
+                }
+                
+                ctx.fillStyle = 'black';
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function drawBestPath(ctx) {
+            if (!aco.bestPath || aco.bestPath.length < 2) return;
             
-            params.antCount = parseInt(document.getElementById('antCount').value);
-            params.alpha = parseFloat(document.getElementById('alpha').value);
-            params.beta = parseFloat(document.getElementById('beta').value);
-            params.evaporation = parseFloat(document.getElementById('evaporation').value);
-            params.speed = parseInt(document.getElementById('speed').value);
+            ctx.strokeStyle = 'rgba(0, 100, 0, 0.7)';
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            
+            const startNode = graphData.nodes.find(n => n.id === aco.bestPath[0]);
+            ctx.moveTo(startNode.scaledX, startNode.scaledY);
+            
+            for (let i = 1; i < aco.bestPath.length; i++) {
+                const node = graphData.nodes.find(n => n.id === aco.bestPath[i]);
+                ctx.lineTo(node.scaledX, node.scaledY);
+            }
+            
+            ctx.stroke();
         }
 
+        // Funkcje do aktualizacji interfejsu
+        function updateStats() {
+            document.getElementById('iteration').textContent = aco.iteration;
+            document.getElementById('antsActive').textContent = aco.activeAnts;
+        }
+
+        function finishSimulation() {
+            const resultText = document.getElementById('resultText');
+            
+            if (aco.bestPath) {
+                resultText.innerHTML = `
+                    <p>Dzięki niepozornym mrówkom i sercu ogra królestwo Verdantii znów zaznało pokoju!</p>
+                    <p>Gruntor dotarł do Baszty Zmierzchu najkrótszą drogą o długości ${aco.bestPathLength.toFixed(2)}.</p>
+                    <p>Ścieżka wiodła przez: ${aco.bestPath.map(id => graphData.nodes.find(n => n.id === id).name).join(' → ')}.</p>
+                    <p>Pamiętaj, podróżniku: małe umysły potrafią wielkie cuda, gdy łączy je wspólny feromon!</p>
+                `;
+                
+                // Animacja triumfu
+                animateTriumph();
+            } else {
+                resultText.innerHTML = `
+                    <p>Niestety, mrówkom nie udało się znaleźć bezpiecznej drogi dla Gruntora.</p>
+                    <p>Może spróbujesz jeszcze raz z innymi parametrami algorytmu?</p>
+                `;
+            }
+            
+            document.getElementById('result').style.display = 'block';
+        }
+
+        function animateTriumph() {
+            const gruntor = document.getElementById('gruntor');
+            const liliana = document.getElementById('liliana');
+            
+            // Przesuń Lilianę obok Gruntora
+            const gruntorPos = graphData.nodes.find(n => n.id === 'BG1');
+            liliana.style.left = (gruntorPos.scaledX + 40) + 'px';
+            liliana.style.top = (gruntorPos.scaledY - 15) + 'px';
+            
+            // Dodaj efekt radości
+            gruntor.style.transform = 'scale(1.2)';
+            gruntor.style.transition = 'transform 0.5s';
+            
+            setTimeout(() => {
+                gruntor.style.transform = 'scale(1)';
+            }, 500);
+            
+            // Ukryj smoka
+            document.getElementById('dragon').style.display = 'none';
+        }
+
+        // Inicjalizacja i obsługa przycisków
+        let aco;
+        
         function startSimulation() {
-            if (isRunning) return;
+            const params = {
+                antCount: parseInt(document.getElementById('antCount').value),
+                alpha: parseFloat(document.getElementById('alpha').value),
+                beta: parseFloat(document.getElementById('beta').value),
+                evaporation: parseFloat(document.getElementById('evaporation').value),
+                iterations: parseInt(document.getElementById('iterations').value)
+            };
             
-            isRunning = true;
-            if (ants.length === 0) {
-                initializeAnts();
-            }
-            animate();
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('result').style.display = 'none';
+            
+            // Przywróć pozycje postaci
+            scalePositions();
+            document.getElementById('dragon').style.display = 'block';
+            
+            // Inicjalizuj ACO
+            aco = new AntColonyOptimization(graphData, params);
+            
+            // Rozpocznij symulację
+            aco.runIteration();
+            drawSimulation();
         }
-
-        function stopSimulation() {
-            isRunning = false;
-            if (animationId) {
-                cancelAnimationFrame(animationId);
-            }
-        }
-
+        
         function resetSimulation() {
-            stopSimulation();
-            
-            // Reset wszystkich zmiennych
-            pheromones = {};
-            ants = [];
-            bestPath = null;
-            bestDistance = Infinity;
-            iteration = 0;
-            gruntor = null;
-            gruntorProgress = 0;
-            
-            // Inicjalizacja feromonów
-            for (let edge of edges) {
-                pheromones[`${edge.from}-${edge.to}`] = 1;
-            }
-            
-            // Aktualizacja UI
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('result').style.display = 'none';
             document.getElementById('iteration').textContent = '0';
             document.getElementById('bestPath').textContent = '-';
-            document.getElementById('currentPath').textContent = '-';
+            document.getElementById('antsActive').textContent = '0';
             
-            drawMap();
+            scalePositions();
+            initGraphics();
         }
-
-        function initializeAnts() {
-            ants = [];
-            for (let i = 0; i < params.antCount; i++) {
-                ants.push(new Ant("BG1")); // Start z Bagien
-            }
-        }
-
-        function animate() {
-            if (!isRunning) return;
+        
+        // Inicjalizacja strony
+        document.addEventListener('DOMContentLoaded', () => {
+            scalePositions();
+            initGraphics();
             
-            // Aktualizacja pozycji mrówek
-            let allReachedTarget = true;
-            for (let ant of ants) {
-                ant.updatePosition();
-                if (ant.moving) {
-                    allReachedTarget = false;
-                }
-            }
-            
-            // Jeśli wszystkie mrówki dotarły do swoich celów, wykonaj ruch
-            if (allReachedTarget) {
-                let allFinished = true;
-                for (let ant of ants) {
-                    if (ant.currentNode !== "BST") {
-                        ant.move();
-                        if (ant.currentNode !== "BST") {
-                            allFinished = false;
-                        }
-                    }
-                }
-                
-                //
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Baśń o Mrówczej Królowej - Algorytm Mrówkowy</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .story-intro {
-            background: rgba(0, 20, 40, 0.7);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-style: italic;
-            text-align: center;
-            line-height: 1.6;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        @media (max-width: 968px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .canvas-container {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            position: relative;
-        }
-
-        canvas {
-            border: 2px solid #FFD700;
-            border-radius: 10px;
-            background: #0a1929;
-            width: 100%;
-            height: auto;
-            display: block;
-            cursor: pointer;
-        }
-
-        .controls {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-
-        .control-group {
-            margin-bottom: 20px;
-        }
-
-        .control-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #FFD700;
-        }
-
-        .control-group input[type="range"] {
-            width: 100%;
-            margin-bottom: 5px;
-        }
-
-        .control-group span {
-            display: inline-block;
-            width: 40px;
-            text-align: right;
-            color: #87CEEB;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        button {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn-start {
-            background: linear-gradient(45deg, #27ae60, #2ecc71);
-            color: white;
-        }
-
-        .btn-start:hover {
-            background: linear-gradient(45deg, #2ecc71, #27ae60);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-stop {
-            background: linear-gradient(45deg, #e74c3c, #c0392b);
-            color: white;
-        }
-
-        .btn-stop:hover {
-            background: linear-gradient(45deg, #c0392b, #e74c3c);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-reset {
-            background: linear-gradient(45deg, #3498db, #2980b9);
-            color: white;
-        }
-
-        .btn-reset:hover {
-            background: linear-gradient(45deg, #2980b9, #3498db);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .stats {
-            background: rgba(0, 20, 40, 0.7);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding: 5px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stat-item:last-child {
-            border-bottom: none;
-        }
-
-        .stat-label {
-            color: #FFD700;
-        }
-
-        .stat-value {
-            color: #87CEEB;
-            font-weight: bold;
-        }
-
-        .legend {
-            background: rgba(0, 20, 40, 0.7);
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            margin-right: 10px;
-            border: 2px solid white;
-        }
-
-        .message-box {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            padding: 30px;
-            border-radius: 15px;
-            border: 3px solid #FFD700;
-            text-align: center;
-            display: none;
-            z-index: 1000;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-        }
-
-        .message-box h2 {
-            color: #FFD700;
-            margin-bottom: 15px;
-        }
-
-        .message-box p {
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .message-box button {
-            padding: 10px 30px;
-            background: #FFD700;
-            color: #000;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* Animacje */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-
-        /* Tooltip */
-        .tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            pointer-events: none;
-            display: none;
-            z-index: 100;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🏰 Baśń o Mrówczej Królowej 🐜</h1>
-            <p>Pomóż ogrowi Gruntorowi uratować księżniczkę Lilianę!</p>
-        </div>
-
-        <div class="story-intro">
-            <p>W królestwie Verdantii smok Skaldra porwał księżniczkę Lilianę. 
-            Dzielny ogr Gruntor wyrusza na ratunek, ale labirynt jest zbyt skomplikowany! 
-            Na szczęście mądra królowa mrówek Myrmidia wysyła swoje zwiadowczynie, 
-            by znaleźć najkrótszą drogę do Baszty Zmierzchu...</p>
-        </div>
-
-        <div class="main-content">
-            <div class="canvas-container">
-                <canvas id="mapCanvas" width="900" height="600"></canvas>
-                <div class="tooltip" id="tooltip"></div>
-            </div>
-
-            <div class="controls">
-                <h3>⚙️ Parametry Algorytmu</h3>
-                
-                <div class="control-group">
-                    <label for="antCount">Liczba mrówek: <span id="antCountValue">50</span></label>
-                    <input type="range" id="antCount" min="10" max="200" value="50" step="10">
-                </div>
-
-                <div class="control-group">
-                    <label for="alpha">Alfa (wpływ feromonu): <span id="alphaValue">1.0</span></label>
-                    <input type="range" id="alpha" min="0" max="3" value="1" step="0.1">
-                </div>
-
-                <div class="control-group">
-                    <label for="beta">Beta (wpływ odległości): <span id="betaValue">2.0</span></label>
-                    <input type="range" id="beta" min="0" max="5" value="2" step="0.1">
-                </div>
-
-                <div class="control-group">
-                    <label for="evaporation">Parowanie feromonu: <span id="evaporationValue">0.1</span></label>
-                    <input type="range" id="evaporation" min="0" max="1" value="0.1" step="0.05">
-                </div>
-
-                <div class="control-group">
-                    <label for="speed">Szybkość animacji: <span id="speedValue">5</span></label>
-                    <input type="range" id="speed" min="1" max="10" value="5" step="1">
-                </div>
-
-                <div class="button-group">
-                    <button class="btn-start" onclick="startSimulation()">▶️ Start</button>
-                    <button class="btn-stop" onclick="stopSimulation()">⏸️ Stop</button>
-                    <button class="btn-reset" onclick="resetSimulation()">🔄 Reset</button>
-                </div>
-
-                <div class="stats">
-                    <h3>📊 Statystyki</h3>
-                    <div class="stat-item">
-                        <span class="stat-label">Iteracja:</span>
-                        <span class="stat-value" id="iteration">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Najkrótsza ścieżka:</span>
-                        <span class="stat-value" id="bestPath">-</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Aktualna długość:</span>
-                        <span class="stat-value" id="currentPath">-</span>
-                    </div>
-                </div>
-
-                <div class="legend">
-                    <h3>🗺️ Legenda</h3>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #4CAF50;"></div>
-                        <span>Bagna (start Gruntora)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #FF6B6B;"></div>
-                        <span>Baszta Zmierzchu (cel)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #FFD700;"></div>
-                        <span>Mrowisko królowej</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #87CEEB;"></div>
-                        <span>Punkty orientacyjne</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="message-box" id="messageBox">
-        <h2>🎉 Zwycięstwo! 🎉</h2>
-        <p id="victoryMessage">Gruntor dotarł do Baszty Zmierzchu!</p>
-        <button onclick="closeMessage()">Zamknij</button>
-    </div>
-
-    <script>
-        // Dane grafu z baśni
-        const nodes = [
-            { id: "MR1", name: "Najwyższe Mrowisko", x: 150, y: 350 },
-            { id: "BG1", name: "Bagna Koralowe (start Gruntora)", x: 180, y: 500 },
-            { id: "RC1", name: "Bród – Rzeka Dwóch Cieni", x: 450, y: 400 },
-            { id: "LB1", name: "Labirynt Pięciu Dolin (centrum)", x: 500, y: 300 },
-            { id: "BST", name: "Baszta Zmierzchu – Góry Mgliste", x: 770, y: 140 },
-            { id: "CT1", name: "Zamek Główny Verdantii", x: 730, y: 470 }
-        ];
-
-        const edges = [
-            { from: "BG1", to: "RC1", dist: 53.58 },
-            { from: "MR1", to: "LB1", dist: 41.83 },
-            { from: "RC1", to: "LB1", dist: 10.00 },
-            { from: "LB1", to: "BST", dist: 77.11 },
-            { from: "MR1", to: "BG1", dist: 90.11 },
-            { from: "BG1", to: "CT1", dist: 17.78 },
-            { from: "CT1", to: "LB1", dist: 68.00 },
-            { from: "MR1", to: "RC1", dist: 54.08 },
-            { from: "BST", to: "CT1", dist: 113.07 }
-        ];
-
-        // Zmienne globalne
-        let canvas, ctx;
-        let pheromones = {};
-        let ants = [];
-        let bestPath = null;
-        let bestDistance = Infinity;
-        let iteration = 0;
-        let isRunning = false;
-        let animationId = null;
-        let gruntor = null;
-        let gruntorProgress = 0;
-
-        // Parametry algorytmu
-        let params = {
-            antCount: 50,
-            alpha: 1.0,
-            beta: 2.0,
-            evaporation: 0.1,
-            Q: 100,
-            speed: 5
-        };
-
-        // Klasa Mrówka
-        class Ant {
-            constructor(startNode) {
-                this.currentNode = startNode;
-                this.visited = [startNode];
-                this.distance = 0;
-                this.x = nodes.find(n => n.id === startNode).x;
-                this.y = nodes.find(n => n.id === startNode).y;
-                this.targetX = this.x;
-                this.targetY = this.y;
-                this.moving = false;
-                this.speed = 2 + Math.random() * 2;
-            }
-
-            selectNextNode() {
-                const neighbors = getNeighbors(this.currentNode);
-                const unvisited = neighbors.filter(n => !this.visited.includes(n.id));
-                
-                if (unvisited.length === 0) return null;
-
-                // Jeśli wszystkie mrówki zakończyły trasę
-                if (allFinished) {
-                    // Znajdź najlepszą mrówkę
-                    for (let ant of ants) {
-                        if (ant.distance < bestDistance) {
-                            bestDistance = ant.distance;
-                            bestPath = [...ant.visited];
-                            document.getElementById('bestPath').textContent = 
-                                bestDistance.toFixed(2) + ' jednostek';
-                        }
-                        ant.depositPheromone();
-                    }
-                    
-                    // Parowanie feromonów
-                    evaporatePheromones();
-                    
-                    // Nowa iteracja
-                    iteration++;
-                    document.getElementById('iteration').textContent = iteration;
-                    
-                    // Reset mrówek
-                    initializeAnts();
-                    
-                    // Uruchom Gruntora po znalezieniu ścieżki
-                    if (bestPath && !gruntor) {
-                        gruntor = true;
-                        animateGruntor();
-                    }
-                }
-            }
-            
-            // Aktualizacja aktualnej długości ścieżki
-            if (ants.length > 0) {
-                const avgDistance = ants.reduce((sum, ant) => sum + ant.distance, 0) / ants.length;
-                document.getElementById('currentPath').textContent = avgDistance.toFixed(2) + ' jednostek';
-            }
-            
-            drawMap();
-            animationId = requestAnimationFrame(animate);
-        }
-
-        function animateGruntor() {
-            if (!bestPath || gruntorProgress >= 100) {
-                if (gruntorProgress >= 100) {
-                    showVictoryMessage();
-                }
-                return;
-            }
-            
-            gruntorProgress += 0.5 * params.speed;
-            
-            if (gruntorProgress < 100) {
-                setTimeout(animateGruntor, 50);
-            } else {
-                showVictoryMessage();
-            }
-        }
-
-        function showVictoryMessage() {
-            const message = `Gruntor pokonał ${bestDistance.toFixed(2)} jednostek w ${iteration} iteracjach! 
-            Dzięki mądrości mrówek uratował księżniczkę Lilianę. 
-            Smok Skaldra został pokonany, a królestwo Verdantii znów jest bezpieczne!`;
-            
-            document.getElementById('victoryMessage').textContent = message;
-            document.getElementById('messageBox').style.display = 'block';
-        }
-
-        function closeMessage() {
-            document.getElementById('messageBox').style.display = 'none';
-        }
-
-        // Event listeners dla kontrolek
-        document.getElementById('antCount').addEventListener('input', updateControls);
-        document.getElementById('alpha').addEventListener('input', updateControls);
-        document.getElementById('beta').addEventListener('input', updateControls);
-        document.getElementById('evaporation').addEventListener('input', updateControls);
-        document.getElementById('speed').addEventListener('input', updateControls);
-
-        // Tooltip dla canvas
-        canvas = document.getElementById('mapCanvas');
-        ctx = canvas.getContext('2d');
-        const tooltip = document.getElementById('tooltip');
-
-        canvas.addEventListener('mousemove', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            // Sprawdź czy kursor jest nad węzłem
-            for (let node of nodes) {
-                const distance = Math.sqrt((x - node.x) ** 2 + (y - node.y) ** 2);
-                if (distance < 20) {
-                    tooltip.style.display = 'block';
-                    tooltip.style.left = e.clientX + 10 + 'px';
-                    tooltip.style.top = e.clientY - 30 + 'px';
-                    tooltip.textContent = node.name;
-                    return;
-                }
-            }
-            
-            tooltip.style.display = 'none';
+            document.getElementById('startBtn').addEventListener('click', startSimulation);
+            document.getElementById('resetBtn').addEventListener('click', resetSimulation);
         });
-
-        // Inicjalizacja
-        window.onload = function() {
-            updateControls();
-            resetSimulation();
-            
-            // Pokaż wiadomość powitalną
-            setTimeout(() => {
-                alert('Witaj w baśniowej symulacji algorytmu mrówkowego! \n\n' +
-                      '1. Kliknij START aby rozpocząć poszukiwanie drogi\n' +
-                      '2. Obserwuj jak mrówki znajdują najkrótszą trasę\n' +
-                      '3. Po znalezieniu drogi, Gruntor automatycznie wyruszy ratować księżniczkę!\n\n' +
-                      'Możesz zmieniać parametry algorytmu w panelu po prawej stronie.');
-            }, 500);
-        };
-
-        // Responsywność canvas
-        function resizeCanvas() {
-            const container = document.querySelector('.canvas-container');
-            const maxWidth = container.clientWidth - 40;
-            const scale = Math.min(1, maxWidth / 900);
-            
-            canvas.style.transform = `scale(${scale})`;
-            canvas.style.transformOrigin = 'top left';
-        }
-
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
     </script>
 </body>
-</html> Oblicz prawdopodobieństwa
-                const probabilities = [];
-                let sum = 0;
-
-                for (let neighbor of unvisited) {
-                    const edge = getEdge(this.currentNode, neighbor.id);
-                    const pheromone = getPheromone(this.currentNode, neighbor.id);
-                    const visibility = 1 / edge.dist;
-                    
-                    const prob = Math.pow(pheromone, params.alpha) * Math.pow(visibility, params.beta);
-                    probabilities.push({ node: neighbor.id, prob: prob });
-                    sum += prob;
-                }
-
-                // Wybierz węzeł na podstawie prawdopodobieństwa
-                let random = Math.random() * sum;
-                for (let p of probabilities) {
-                    random -= p.prob;
-                    if (random <= 0) {
-                        return p.node;
-                    }
-                }
-
-                return probabilities[0].node;
-            }
-
-            move() {
-                if (this.currentNode === "BST") return; // Dotarł do celu
-
-                const nextNode = this.selectNextNode();
-                if (!nextNode) return;
-
-                const edge = getEdge(this.currentNode, nextNode);
-                this.distance += edge.dist;
-                this.currentNode = nextNode;
-                this.visited.push(nextNode);
-
-                const targetNode = nodes.find(n => n.id === nextNode);
-                this.targetX = targetNode.x;
-                this.targetY = targetNode.y;
-                this.moving = true;
-            }
-
-            updatePosition() {
-                if (!this.moving) return;
-
-                const dx = this.targetX - this.x;
-                const dy = this.targetY - this.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < this.speed) {
-                    this.x = this.targetX;
-                    this.y = this.targetY;
-                    this.moving = false;
-                } else {
-                    this.x += (dx / distance) * this.speed * params.speed;
-                    this.y += (dy / distance) * this.speed * params.speed;
-                }
-            }
-
-            depositPheromone() {
-                if (this.currentNode !== "BST") return;
-
-                const delta = params.Q / this.distance;
-                for (let i = 0; i < this.visited.length - 1; i++) {
-                    const from = this.visited[i];
-                    const to = this.visited[i + 1];
-                    const key = `${from}-${to}`;
-                    pheromones[key] = (pheromones[key] || 1) + delta;
-                }
-            }
-        }
-
-        // Funkcje pomocnicze
-        function getNeighbors(nodeId) {
-            const neighbors = [];
-            for (let edge of edges) {
-                if (edge.from === nodeId) {
-                    neighbors.push(nodes.find(n => n.id === edge.to));
-                } else if (edge.to === nodeId) {
-                    neighbors.push(nodes.find(n => n.id === edge.from));
-                }
-            }
-            return neighbors;
-        }
-
-        function getEdge(from, to) {
-            return edges.find(e => 
-                (e.from === from && e.to === to) || 
-                (e.from === to && e.to === from)
-            );
-        }
-
-        function getPheromone(from, to) {
-            const key1 = `${from}-${to}`;
-            const key2 = `${to}-${from}`;
-            return pheromones[key1] || pheromones[key2] || 1;
-        }
-
-        function evaporatePheromones() {
-            for (let key in pheromones) {
-                pheromones[key] *= (1 - params.evaporation);
-                if (pheromones[key] < 0.1) pheromones[key] = 0.1;
-            }
-        }
-
-        // Funkcje rysowania
-        function drawMap() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Tło z gradientem
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#0a1929');
-            gradient.addColorStop(1, '#1e3c72');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Rysuj mgłę
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-            for (let i = 0; i < 5; i++) {
-                ctx.beginPath();
-                ctx.arc(
-                    Math.random() * canvas.width, 
-                    Math.random() * canvas.height, 
-                    50 + Math.random() * 100, 
-                    0, 
-                    2 * Math.PI
-                );
-                ctx.fill();
-            }
-
-            // Rysuj krawędzie z feromonami
-            for (let edge of edges) {
-                const from = nodes.find(n => n.id === edge.from);
-                const to = nodes.find(n => n.id === edge.to);
-                
-                ctx.beginPath();
-                ctx.moveTo(from.x, from.y);
-                ctx.lineTo(to.x, to.y);
-                
-                // Grubość linii zależna od feromonu
-                const pheromone = getPheromone(edge.from, edge.to);
-                ctx.lineWidth = Math.min(1 + pheromone / 5, 8);
-                
-                // Kolor zależny od feromonu
-                const intensity = Math.min(pheromone / 10, 1);
-                ctx.strokeStyle = `rgba(124, 252, 0, ${0.3 + intensity * 0.7})`;
-                ctx.stroke();
-                
-                // Dodaj świecące punkty na silnych ścieżkach
-                if (pheromone > 5) {
-                    ctx.shadowBlur = 20;
-                    ctx.shadowColor = '#7CFC00';
-                    ctx.stroke();
-                    ctx.shadowBlur = 0;
-                }
-            }
-
-            // Rysuj węzły
-            for (let node of nodes) {
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, 20, 0, 2 * Math.PI);
-                
-                // Różne kolory dla różnych typów węzłów
-                if (node.id === "BG1") {
-                    ctx.fillStyle = '#4CAF50';
-                } else if (node.id === "BST") {
-                    ctx.fillStyle = '#FF6B6B';
-                } else if (node.id === "MR1") {
-                    ctx.fillStyle = '#FFD700';
-                } else {
-                    ctx.fillStyle = '#87CEEB';
-                }
-                
-                ctx.fill();
-                ctx.strokeStyle = 'white';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                
-                // Dodaj ikony
-                ctx.font = '16px Arial';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = 'black';
-                
-                if (node.id === "BG1") ctx.fillText('🐸', node.x, node.y);
-                else if (node.id === "BST") ctx.fillText('🐉', node.x, node.y);
-                else if (node.id === "MR1") ctx.fillText('🐜', node.x, node.y);
-                else if (node.id === "CT1") ctx.fillText('🏰', node.x, node.y);
-                else ctx.fillText('🌳', node.x, node.y);
-                
-                // Nazwa węzła
-                ctx.font = '12px Arial';
-                ctx.fillStyle = 'white';
-                ctx.fillText(node.name.split(' ')[0], node.x, node.y + 35);
-            }
-
-            // Rysuj najlepszą ścieżkę
-            if (bestPath && bestPath.length > 1) {
-                ctx.strokeStyle = '#FFD700';
-                ctx.lineWidth = 4;
-                ctx.setLineDash([10, 5]);
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = '#FFD700';
-                
-                ctx.beginPath();
-                const firstNode = nodes.find(n => n.id === bestPath[0]);
-                ctx.moveTo(firstNode.x, firstNode.y);
-                
-                for (let i = 1; i < bestPath.length; i++) {
-                    const node = nodes.find(n => n.id === bestPath[i]);
-                    ctx.lineTo(node.x, node.y);
-                }
-                
-                ctx.stroke();
-                ctx.setLineDash([]);
-                ctx.shadowBlur = 0;
-            }
-
-            // Rysuj mrówki
-            for (let ant of ants) {
-                ctx.beginPath();
-                ctx.arc(ant.x, ant.y, 5, 0, 2 * Math.PI);
-                ctx.fillStyle = '#FF69B4';
-                ctx.fill();
-                
-                // Dodaj świecenie
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = '#FF69B4';
-                ctx.fill();
-                ctx.shadowBlur = 0;
-            }
-
-            // Rysuj Gruntora
-            if (gruntor && bestPath) {
-                const progress = gruntorProgress / 100;
-                const pathIndex = Math.floor(progress * (bestPath.length - 1));
-                const t = (progress * (bestPath.length - 1)) % 1;
-                
-                if (pathIndex < bestPath.length - 1) {
-                    const from = nodes.find(n => n.id === bestPath[pathIndex]);
-                    const to = nodes.find(n => n.id === bestPath[pathIndex + 1]);
-                    
-                    const x = from.x + (to.x - from.x) * t;
-                    const y = from.y + (to.y - from.y) * t;
-                    
-                    // Rysuj Gruntora
-                    ctx.beginPath();
-                    ctx.arc(x, y, 25, 0, 2 * Math.PI);
-                    ctx.fillStyle = '#2ECC40';
-                    ctx.fill();
-                    ctx.strokeStyle = 'white';
-                    ctx.lineWidth = 3;
-                    ctx.stroke();
-                    
-                    ctx.font = '30px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText('🧌', x, y);
-                }
-            }
-        }
-
-        // Funkcje kontroli symulacji
-        function updateControls() {
-            document.getElementById('antCountValue').textContent = document.getElementById('antCount').value;
-            document.getElementById('alphaValue').textContent = document.getElementById('alpha').value;
-            document.getElementById('betaValue').textContent = document.getElementById('beta').value;
-            document.getElementById('evaporationValue').textContent = document.getElementById('evaporation').value;
-            document.getElementById('speedValue').textContent = document.getElementById('speed').value;
-            
-            params.antCount = parseInt(document.getElementById('antCount').value);
-            params.alpha = parseFloat(document.getElementById('alpha').value);
-            params.beta = parseFloat(document.getElementById('beta').value);
-            params.evaporation = parseFloat(document.getElementById('evaporation').value);
-            params.speed = parseInt(document.getElementById('speed').value);
-        }
-
-        function startSimulation() {
-            if (isRunning) return;
-            
-            isRunning = true;
-            if (ants.length === 0) {
-                initializeAnts();
-            }
-            animate();
-        }
-
-        function stopSimulation() {
-            isRunning = false;
-            if (animationId) {
-                cancelAnimationFrame(animationId);
-            }
-        }
-
-        function resetSimulation() {
-            stopSimulation();
-            
-            // Reset wszystkich zmiennych
-            pheromones = {};
-            ants = [];
-            bestPath = null;
-            bestDistance = Infinity;
-            iteration = 0;
-            gruntor = null;
-            gruntorProgress = 0;
-            
-            // Inicjalizacja feromonów
-            for (let edge of edges) {
-                pheromones[`${edge.from}-${edge.to}`] = 1;
-            }
-            
-            // Aktualizacja UI
-            document.getElementById('iteration').textContent = '0';
-            document.getElementById('bestPath').textContent = '-';
-            document.getElementById('currentPath').textContent = '-';
-            
-            drawMap();
-        }
-
-        function initializeAnts() {
-            ants = [];
-            for (let i = 0; i < params.antCount; i++) {
-                ants.push(new Ant("BG1")); // Start z Bagien
-            }
-        }
-
-        function animate() {
-            if (!isRunning) return;
-            
-            // Aktualizacja pozycji mrówek
-            let allReachedTarget = true;
-            for (let ant of ants) {
-                ant.updatePosition();
-                if (ant.moving) {
-                    allReachedTarget = false;
-                }
-            }
-            
-            // Jeśli wszystkie mrówki dotarły do swoich celów, wykonaj ruch
-            if (allReachedTarget) {
-                let allFinished = true;
-                for (let ant of ants) {
-                    if (ant.currentNode !== "BST") {
-                        ant.move();
-                        if (ant.currentNode !== "BST") {
-                            allFinished = false;
-                        }
-                    }
-                }
-                
-                //
+</html>
