@@ -1,1 +1,36 @@
-
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baśń o Mrówczej Królowej, Dzielnym Ogrze i Smoku</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="story-container">
+        <h1>Baśń o Mrówczej Królowej, Dzielnym Ogrze i Smoku z Gór Mglistych</h1>
+        <div id="map-container">
+            <canvas id="map"></canvas>
+            <div id="controls">
+                <button id="start-btn">Rozpocznij misję</button>
+                <button id="reset-btn">Reset</button>
+                <div class="slider-container">
+                    <label for="ants-slider">Liczba mrówek:</label>
+                    <input type="range" id="ants-slider" min="1" max="100" value="20">
+                    <span id="ants-value">20</span>
+                </div>
+                <div class="slider-container">
+                    <label for="iterations-slider">Iteracje:</label>
+                    <input type="range" id="iterations-slider" min="1" max="500" value="100">
+                    <span id="iterations-value">100</span>
+                </div>
+            </div>
+        </div>
+        <div id="story-text">
+            <p>W królestwie Verdantii księżniczka Liliana została porwana przez smoka Skaldra Czarnopłomyka...</p>
+            <p>Dzielny ogr Gruntor wyrusza na ratunek z pomocą mrówek Formica Ex Machina!</p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
