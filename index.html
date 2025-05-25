@@ -3,34 +3,915 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Baśń o Mrówczej Królowej, Dzielnym Ogrze i Smoku</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Baśń o Mrówczej Królowej - Symulacja ACO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #2c5530, #1a3d1f);
+            color: #e8f5e8;
+            min-height: 100vh;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            color: #b8e6b8;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.4;
+        }
+        
+        .main-content {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+        }
+        
+        .canvas-container {
+            flex: 2;
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+        
+        .controls {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            max-width: 350px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-group h3 {
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        label {
+            color: #b8e6b8;
+            font-size: 0.9em;
+        }
+        
+        input[type="range"] {
+            width: 120px;
+            accent-color: #4CAF50;
+        }
+        
+        input[type="number"] {
+            width: 60px;
+            padding: 5px;
+            border-radius: 5px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-align: center;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .stats {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .stats h3 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            color: #b8e6b8;
+        }
+        
+        .legend {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        
+        .legend h3 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            color: #b8e6b8;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid white;
+        }
+        
+        .story-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            display: none;
+            z-index: 100;
+        }
+        
+        .story-panel.show {
+            display: block;
+        }
+        
+        .story-panel h3 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .story-panel p {
+            color: #b8e6b8;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .controls {
+                max-width: none;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div id="story-container">
-        <h1>Baśń o Mrówczej Królowej, Dzielnym Ogrze i Smoku z Gór Mglistych</h1>
-        <div id="map-container">
-            <canvas id="map"></canvas>
-            <div id="controls">
-                <button id="start-btn">Rozpocznij misję</button>
-                <button id="reset-btn">Reset</button>
-                <div class="slider-container">
-                    <label for="ants-slider">Liczba mrówek:</label>
-                    <input type="range" id="ants-slider" min="1" max="100" value="20">
-                    <span id="ants-value">20</span>
+    <div class="container">
+        <div class="header">
+            <h1>🐜 Baśń o Mrówczej Królowej 🏰</h1>
+            <p>Pomóż dzielnym mrówkom znaleźć najkrótszą drogę dla ogra Gruntora do ratowania księżniczki Liliany!</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="canvas"></canvas>
+                <div id="storyPanel" class="story-panel">
+                    <h3>🗣️ Narrator</h3>
+                    <p id="storyText">Witaj w królestwie Verdantii! Mrówki Formica Ex Machina szykują się do wielkiej misji...</p>
+                    <button onclick="hideStory()">Zamknij</button>
                 </div>
-                <div class="slider-container">
-                    <label for="iterations-slider">Iteracje:</label>
-                    <input type="range" id="iterations-slider" min="1" max="500" value="100">
-                    <span id="iterations-value">100</span>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <h3>🎮 Sterowanie</h3>
+                    <button id="startBtn" onclick="startSimulation()">🚀 Start Misji</button>
+                    <button id="pauseBtn" onclick="pauseSimulation()" disabled>⏸️ Pauza</button>
+                    <button id="resetBtn" onclick="resetSimulation()">🔄 Reset</button>
+                </div>
+                
+                <div class="control-group">
+                    <h3>⚙️ Parametry Mrówek</h3>
+                    <div class="control-row">
+                        <label>Liczba mrówek:</label>
+                        <input type="number" id="numAnts" value="50" min="10" max="200" onchange="updateParams()">
+                    </div>
+                    <div class="control-row">
+                        <label>Alfa (α):</label>
+                        <input type="range" id="alpha" min="0.1" max="3" step="0.1" value="1" onchange="updateParams()">
+                        <span id="alphaValue">1.0</span>
+                    </div>
+                    <div class="control-row">
+                        <label>Beta (β):</label>
+                        <input type="range" id="beta" min="0.1" max="5" step="0.1" value="2" onchange="updateParams()">
+                        <span id="betaValue">2.0</span>
+                    </div>
+                    <div class="control-row">
+                        <label>Parowanie (ρ):</label>
+                        <input type="range" id="rho" min="0.01" max="0.5" step="0.01" value="0.1" onchange="updateParams()">
+                        <span id="rhoValue">0.10</span>
+                    </div>
+                </div>
+                
+                <div class="stats">
+                    <h3>📊 Statystyki</h3>
+                    <div class="stat-item">
+                        <span>Iteracja:</span>
+                        <span id="iteration">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Najlepsza trasa:</span>
+                        <span id="bestLength">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Czas symulacji:</span>
+                        <span id="timeElapsed">00:00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Aktywne mrówki:</span>
+                        <span id="activeAnts">0</span>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <h3>🗺️ Legenda</h3>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4CAF50;"></div>
+                        <span>🏰 Najwyższe Mrowisko (start)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ff6b6b;"></div>
+                        <span>🏰 Baszta Zmierzchu (cel)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffd700;"></div>
+                        <span>🟡 Inne lokacje</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffeb3b;"></div>
+                        <span>🐜 Mrówki</span>
+                    </div>
                 </div>
             </div>
         </div>
-        <div id="story-text">
-            <p>W królestwie Verdantii księżniczka Liliana została porwana przez smoka Skaldra Czarnopłomyka...</p>
-            <p>Dzielny ogr Gruntor wyrusza na ratunek z pomocą mrówek Formica Ex Machina!</p>
-        </div>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        // 🎯 Klasa reprezentująca graf królestwa Verdantii
+        class Graph {
+            constructor() {
+                // Węzły zgodnie z baśnią
+                this.nodes = [
+                    { id: "MR1", name: "Najwyższe Mrowisko", x: 150, y: 350, type: "start" },
+                    { id: "BG1", name: "Bagna Koralowe", x: 180, y: 450, type: "normal" },
+                    { id: "RC1", name: "Bród – Rzeka Dwóch Cieni", x: 450, y: 400, type: "normal" },
+                    { id: "LB1", name: "Labirynt Pięciu Dolin", x: 500, y: 350, type: "normal" },
+                    { id: "BST", name: "Baszta Zmierzchu", x: 670, y: 200, type: "end" },
+                    { id: "CT1", name: "Zamek Główny Verdantii", x: 630, y: 500, type: "normal" }
+                ];
+                
+                // Krawędzie z dystansami
+                this.edges = [
+                    { from: "MR1", to: "BG1", dist: this.calculateDistance("MR1", "BG1") },
+                    { from: "BG1", to: "RC1", dist: this.calculateDistance("BG1", "RC1") },
+                    { from: "MR1", to: "LB1", dist: this.calculateDistance("MR1", "LB1") },
+                    { from: "RC1", to: "LB1", dist: this.calculateDistance("RC1", "LB1") },
+                    { from: "LB1", to: "BST", dist: this.calculateDistance("LB1", "BST") },
+                    { from: "BG1", to: "CT1", dist: this.calculateDistance("BG1", "CT1") },
+                    { from: "CT1", to: "BST", dist: this.calculateDistance("CT1", "BST") },
+                    { from: "MR1", to: "RC1", dist: this.calculateDistance("MR1", "RC1") },
+                    { from: "RC1", to: "CT1", dist: this.calculateDistance("RC1", "CT1") }
+                ];
+                
+                // Macierz feromonów
+                this.pheromones = {};
+                this.initializePheromones();
+                
+                // Znajdź indeksy węzłów startowego i końcowego
+                this.startNodeId = "MR1";
+                this.endNodeId = "BST";
+            }
+            
+            calculateDistance(nodeId1, nodeId2) {
+                const node1 = this.nodes.find(n => n.id === nodeId1);
+                const node2 = this.nodes.find(n => n.id === nodeId2);
+                const dx = node1.x - node2.x;
+                const dy = node1.y - node2.y;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+            
+            initializePheromones() {
+                // Inicjalizuj feromony dla każdej krawędzi
+                this.edges.forEach(edge => {
+                    const key = `${edge.from}-${edge.to}`;
+                    const reverseKey = `${edge.to}-${edge.from}`;
+                    this.pheromones[key] = 1.0;
+                    this.pheromones[reverseKey] = 1.0;
+                });
+            }
+            
+            getNeighbors(nodeId) {
+                const neighbors = [];
+                this.edges.forEach(edge => {
+                    if (edge.from === nodeId) {
+                        neighbors.push({ nodeId: edge.to, distance: edge.dist });
+                    } else if (edge.to === nodeId) {
+                        neighbors.push({ nodeId: edge.from, distance: edge.dist });
+                    }
+                });
+                return neighbors;
+            }
+            
+            getPheromone(from, to) {
+                const key = `${from}-${to}`;
+                return this.pheromones[key] || 1.0;
+            }
+            
+            updatePheromone(from, to, amount) {
+                const key1 = `${from}-${to}`;
+                const key2 = `${to}-${from}`;
+                this.pheromones[key1] = (this.pheromones[key1] || 1.0) + amount;
+                this.pheromones[key2] = (this.pheromones[key2] || 1.0) + amount;
+            }
+            
+            evaporatePheromones(rho) {
+                // Parowanie feromonów
+                Object.keys(this.pheromones).forEach(key => {
+                    this.pheromones[key] *= (1 - rho);
+                    if (this.pheromones[key] < 0.1) this.pheromones[key] = 0.1;
+                });
+            }
+        }
+        
+        // 🐜 Klasa reprezentująca mrówkę
+        class Ant {
+            constructor(graph, startNodeId) {
+                this.graph = graph;
+                this.currentNodeId = startNodeId;
+                this.path = [startNodeId];
+                this.pathLength = 0;
+                this.visited = new Set([startNodeId]);
+                this.completed = false;
+                
+                // Pozycja do animacji
+                this.x = this.getCurrentNode().x;
+                this.y = this.getCurrentNode().y;
+                this.targetX = this.x;
+                this.targetY = this.y;
+                this.progress = 1.0;
+            }
+            
+            getCurrentNode() {
+                return this.graph.nodes.find(n => n.id === this.currentNodeId);
+            }
+            
+            selectNextNode(alpha, beta) {
+                if (this.completed) return null;
+                
+                const neighbors = this.graph.getNeighbors(this.currentNodeId)
+                    .filter(neighbor => !this.visited.has(neighbor.nodeId));
+                
+                if (neighbors.length === 0) {
+                    this.completed = true;
+                    return null;
+                }
+                
+                // Oblicz prawdopodobieństwa dla każdego sąsiada
+                const probabilities = [];
+                let totalProbability = 0;
+                
+                neighbors.forEach(neighbor => {
+                    const pheromone = this.graph.getPheromone(this.currentNodeId, neighbor.nodeId);
+                    const visibility = 1.0 / neighbor.distance;
+                    const prob = Math.pow(pheromone, alpha) * Math.pow(visibility, beta);
+                    probabilities.push({ nodeId: neighbor.nodeId, probability: prob, distance: neighbor.distance });
+                    totalProbability += prob;
+                });
+                
+                // Normalizuj prawdopodobieństwa
+                probabilities.forEach(p => p.probability /= totalProbability);
+                
+                // Wybierz węzeł metodą ruletki
+                const random = Math.random();
+                let cumulativeProbability = 0;
+                
+                for (let i = 0; i < probabilities.length; i++) {
+                    cumulativeProbability += probabilities[i].probability;
+                    if (random <= cumulativeProbability) {
+                        return probabilities[i];
+                    }
+                }
+                
+                return probabilities[probabilities.length - 1];
+            }
+            
+            moveToNextNode(alpha, beta) {
+                const nextNodeInfo = this.selectNextNode(alpha, beta);
+                if (!nextNodeInfo) return false;
+                
+                this.visited.add(nextNodeInfo.nodeId);
+                this.path.push(nextNodeInfo.nodeId);
+                this.pathLength += nextNodeInfo.distance;
+                this.currentNodeId = nextNodeInfo.nodeId;
+                
+                // Ustaw cel animacji
+                const targetNode = this.getCurrentNode();
+                this.targetX = targetNode.x;
+                this.targetY = targetNode.y;
+                this.progress = 0;
+                
+                // Sprawdź czy dotarła do celu
+                if (this.currentNodeId === this.graph.endNodeId) {
+                    this.completed = true;
+                }
+                
+                return true;
+            }
+            
+            updateAnimation(speed = 0.1) {
+                if (this.progress < 1.0) {
+                    this.progress += speed;
+                    if (this.progress > 1.0) this.progress = 1.0;
+                    
+                    // Interpolacja liniowa
+                    const startNode = this.graph.nodes.find(n => n.id === this.path[this.path.length - 2]);
+                    if (startNode) {
+                        this.x = startNode.x + (this.targetX - startNode.x) * this.progress;
+                        this.y = startNode.y + (this.targetY - startNode.y) * this.progress;
+                    }
+                }
+            }
+            
+            depositPheromones() {
+                if (!this.completed) return;
+                
+                // Im krótsza ścieżka, tym więcej feromonów
+                const pheromoneAmount = 1000 / this.pathLength;
+                
+                for (let i = 0; i < this.path.length - 1; i++) {
+                    this.graph.updatePheromone(this.path[i], this.path[i + 1], pheromoneAmount);
+                }
+            }
+        }
+        
+        // 🎮 Główna klasa symulacji
+        class AntColonySimulation {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.graph = new Graph();
+                this.ants = [];
+                this.isRunning = false;
+                this.isPaused = false;
+                this.iteration = 0;
+                this.bestPath = null;
+                this.bestPathLength = Infinity;
+                this.startTime = null;
+                
+                // Parametry algorytmu
+                this.params = {
+                    numAnts: 50,
+                    alpha: 1.0,
+                    beta: 2.0,
+                    rho: 0.1
+                };
+                
+                this.setupCanvas();
+                this.showStory("Witaj w królestwie Verdantii! Mrówki Formica Ex Machina szykują się do wielkiej misji ratowania księżniczki Liliany...");
+            }
+            
+            setupCanvas() {
+                const resizeCanvas = () => {
+                    const container = this.canvas.parentElement;
+                    this.canvas.width = container.clientWidth;
+                    this.canvas.height = container.clientHeight;
+                    this.scaleGraph();
+                };
+                
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+            }
+            
+            scaleGraph() {
+                // Przeskaluj współrzędne węzłów do wielkości canvas
+                const margin = 50;
+                const maxX = Math.max(...this.graph.nodes.map(n => n.x));
+                const maxY = Math.max(...this.graph.nodes.map(n => n.y));
+                const scaleX = (this.canvas.width - 2 * margin) / maxX;
+                const scaleY = (this.canvas.height - 2 * margin) / maxY;
+                const scale = Math.min(scaleX, scaleY);
+                
+                this.graph.nodes.forEach(node => {
+                    node.scaledX = node.x * scale + margin;
+                    node.scaledY = node.y * scale + margin;
+                });
+            }
+            
+            start() {
+                if (this.isRunning) return;
+                
+                this.isRunning = true;
+                this.isPaused = false;
+                this.startTime = Date.now();
+                this.initializeAnts();
+                this.showStory("Mrówki wyruszają w podróż! Dzielny ogr Gruntor czeka na wytyczenie bezpiecznej trasy...");
+                this.animate();
+            }
+            
+            pause() {
+                this.isPaused = !this.isPaused;
+            }
+            
+            reset() {
+                this.isRunning = false;
+                this.isPaused = false;
+                this.ants = [];
+                this.iteration = 0;
+                this.bestPath = null;
+                this.bestPathLength = Infinity;
+                this.graph.initializePheromones();
+                this.updateStats();
+                this.draw();
+                this.showStory("Symulacja zresetowana. Mrówki są gotowe do nowej misji!");
+            }
+            
+            initializeAnts() {
+                this.ants = [];
+                for (let i = 0; i < this.params.numAnts; i++) {
+                    this.ants.push(new Ant(this.graph, this.graph.startNodeId));
+                }
+            }
+            
+            animate() {
+                if (!this.isRunning) return;
+                
+                if (!this.isPaused) {
+                    this.update();
+                }
+                
+                this.draw();
+                this.updateStats();
+                
+                requestAnimationFrame(() => this.animate());
+            }
+            
+            update() {
+                // Aktualizuj animacje mrówek
+                this.ants.forEach(ant => {
+                    ant.updateAnimation(0.05);
+                    
+                    // Jeśli mrówka zakończyła ruch, wybierz następny węzeł
+                    if (ant.progress >= 1.0 && !ant.completed) {
+                        ant.moveToNextNode(this.params.alpha, this.params.beta);
+                    }
+                });
+                
+                // Sprawdź czy wszystkie mrówki zakończyły
+                const completedAnts = this.ants.filter(ant => ant.completed);
+                if (completedAnts.length === this.ants.length) {
+                    this.completeIteration();
+                }
+            }
+            
+            completeIteration() {
+                this.iteration++;
+                
+                // Znajdź najlepszą ścieżkę w tej iteracji
+                const completedAnts = this.ants.filter(ant => 
+                    ant.completed && ant.currentNodeId === this.graph.endNodeId
+                );
+                
+                if (completedAnts.length > 0) {
+                    const bestAnt = completedAnts.reduce((best, current) => 
+                        current.pathLength < best.pathLength ? current : best
+                    );
+                    
+                    if (bestAnt.pathLength < this.bestPathLength) {
+                        this.bestPath = [...bestAnt.path];
+                        this.bestPathLength = bestAnt.pathLength;
+                        this.showStory(`Eureka! Mrówki znalazły lepszą trasę o długości ${Math.round(this.bestPathLength)} dla Gruntora!`);
+                    }
+                }
+                
+                // Złóż feromony
+                this.ants.forEach(ant => ant.depositPheromones());
+                
+                // Parowanie feromonów
+                this.graph.evaporatePheromones(this.params.rho);
+                
+                // Nowa iteracja
+                this.initializeAnts();
+                
+                // Auto-stop po 100 iteracjach lub znalezieniu dobrego rozwiązania
+                if (this.iteration >= 100 || (this.bestPathLength < 500 && this.iteration >= 20)) {
+                    this.isRunning = false;
+                    this.showVictory();
+                }
+            }
+            
+            draw() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Rysuj tło z gradientem
+                const gradient = this.ctx.createRadialGradient(
+                    this.canvas.width/2, this.canvas.height/2, 0,
+                    this.canvas.width/2, this.canvas.height/2, Math.max(this.canvas.width, this.canvas.height)
+                );
+                gradient.addColorStop(0, 'rgba(76, 175, 80, 0.1)');
+                gradient.addColorStop(1, 'rgba(26, 61, 31, 0.3)');
+                this.ctx.fillStyle = gradient;
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                this.drawEdges();
+                this.drawPheromoneTrails();
+                this.drawBestPath();
+                this.drawNodes();
+                this.drawAnts();
+            }
+            
+            drawEdges() {
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                this.ctx.lineWidth = 2;
+                this.ctx.setLineDash([5, 5]);
+                
+                this.graph.edges.forEach(edge => {
+                    const fromNode = this.graph.nodes.find(n => n.id === edge.from);
+                    const toNode = this.graph.nodes.find(n => n.id === edge.to);
+                    
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(fromNode.scaledX, fromNode.scaledY);
+                    this.ctx.lineTo(toNode.scaledX, toNode.scaledY);
+                    this.ctx.stroke();
+                });
+                
+                this.ctx.setLineDash([]);
+            }
+            
+            drawPheromoneTrails() {
+                // Rysuj intensywność feromonów jako świecące linie
+                this.graph.edges.forEach(edge => {
+                    const pheromoneLevel = this.graph.getPheromone(edge.from, edge.to);
+                    const intensity = Math.min(pheromoneLevel / 5, 1); // Normalizacja
+                    
+                    if (intensity > 0.1) {
+                        const fromNode = this.graph.nodes.find(n => n.id === edge.from);
+                        const toNode = this.graph.nodes.find(n => n.id === edge.to);
+                        
+                        this.ctx.strokeStyle = `rgba(255, 235, 59, ${intensity * 0.8})`;
+                        this.ctx.lineWidth = 2 + intensity * 4;
+                        this.ctx.shadowBlur = 10;
+                        this.ctx.shadowColor = '#ffeb3b';
+                        
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(fromNode.scaledX, fromNode.scaledY);
+                        this.ctx.lineTo(toNode.scaledX, toNode.scaledY);
+                        this.ctx.stroke();
+                        
+                        this.ctx.shadowBlur = 0;
+                    }
+                });
+            }
+            
+            drawBestPath() {
+                if (!this.bestPath) return;
+                
+                this.ctx.strokeStyle = '#4CAF50';
+                this.ctx.lineWidth = 6;
+                this.ctx.shadowBlur = 15;
+                this.ctx.shadowColor = '#4CAF50';
+                
+                this.ctx.beginPath();
+                for (let i = 0; i < this.bestPath.length - 1; i++) {
+                    const fromNode = this.graph.nodes.find(n => n.id === this.bestPath[i]);
+                    const toNode = this.graph.nodes.find(n => n.id === this.bestPath[i + 1]);
+                    
+                    if (i === 0) {
+                        this.ctx.moveTo(fromNode.scaledX, fromNode.scaledY);
+                    }
+                    this.ctx.lineTo(toNode.scaledX, toNode.scaledY);
+                }
+                this.ctx.stroke();
+                this.ctx.shadowBlur = 0;
+            }
+            
+            drawNodes() {
+                this.graph.nodes.forEach(node => {
+                    const x = node.scaledX;
+                    const y = node.scaledY;
+                    
+                    // Wybierz kolor według typu węzła
+                    let color, emoji;
+                    switch (node.type) {
+                        case 'start':
+                            color = '#4CAF50';
+                            emoji = '🏰';
+                            break;
+                        case 'end':
+                            color = '#ff6b6b';
+                            emoji = '🏰';
+                            break;
+                        default:
+                            color = '#ffd700';
+                            emoji = '🌟';
+                    }
+                    
+                    // Rysuj węzeł
+                    this.ctx.fillStyle = color;
+                    this.ctx.shadowBlur = 10;
+                    this.ctx.shadowColor = color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(x, y, 20, 0, 2 * Math.PI);
+                    this.ctx.fill();
+                    this.ctx.shadowBlur = 0;
+                    
+                    // Rysuj emoji
+                    this.ctx.font = '20px Arial';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillText(emoji, x, y + 7);
+                    
+                    // Rysuj nazwę
+                    this.ctx.fillStyle = 'white';
+                    this.ctx.font = '12px Arial';
+                    this.ctx.fillText(node.name, x, y + 40);
+                });
+            }
+            
+            drawAnts() {
+                this.ants.forEach(ant => {
+                    if (ant.completed) return;
+                    
+                    this.ctx.fillStyle = '#ffeb3b';
+                    this.ctx.shadowBlur = 5;
+                    this.ctx.shadowColor = '#ffeb3b';
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(ant.x, ant.y, 3, 0, 2 * Math.PI);
+                    this.ctx.fill();
+                    this.ctx.shadowBlur = 0;
+                });
+            }
+            
+            updateParams(newParams) {
+                this.params = { ...this.params, ...newParams };
+            }
+            
+            updateStats() {
+                document.getElementById('iteration').textContent = this.iteration;
+                document.getElementById('bestLength').textContent = 
+                    this.bestPathLength === Infinity ? '-' : Math.round(this.bestPathLength);
+                
+                if (this.startTime) {
+                    const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                    const minutes = Math.floor(elapsed / 60);
+                    const seconds = elapsed % 60;
+                    document.getElementById('timeElapsed').textContent = 
+                        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+                
+                const activeAnts = this.ants.filter(ant => !ant.completed).length;
+                document.getElementById('activeAnts').textContent = activeAnts;
+            }
+            
+            showStory(text) {
+                document.getElementById('storyText').textContent = text;
+                document.getElementById('storyPanel').classList.add('show');
+                setTimeout(() => {
+                    document.getElementById('storyPanel').classList.remove('show');
+                }, 4000);
+            }
+            
+            showVictory() {
+                const stories = [
+                    "🎉 Sukces! Mrówki wyznaczyły najlepszą trasę dla Gruntora!",
+                    "🗡️ Dzielny ogr ruszył szlakiem mrówek i pokonał smoka Skaldrę!",
+                    "👸 Księżniczka Liliana została uratowana! Królestwo Verdantii świętuje!",
+                    "🌟 Pamiętaj, podróżniku: małe umysły potrafią wielkie cuda, gdy łączy je wspólny feromon!"
+                ];
+                
+                let storyIndex = 0;
+                const showNextStory = () => {
+                    if (storyIndex < stories.length) {
+                        this.showStory(stories[storyIndex]);
+                        storyIndex++;
+                        setTimeout(showNextStory, 5000);
+                    }
+                };
+                showNextStory();
+            }
+        }
+        
+        // 🚀 Inicjalizacja aplikacji
+        let simulation;
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('canvas');
+            simulation = new AntColonySimulation(canvas);
+            updateParams(); // Ustaw początkowe wartości
+        });
+        
+        // 🎮 Funkcje sterowania
+        function startSimulation() {
+            simulation.start();
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('pauseBtn').disabled = false;
+        }
+        
+        function pauseSimulation() {
+            simulation.pause();
+            const pauseBtn = document.getElementById('pauseBtn');
+            pauseBtn.textContent = simulation.isPaused ? '▶️ Wznów' : '⏸️ Pauza';
+        }
+        
+        function resetSimulation() {
+            simulation.reset();
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('pauseBtn').textContent = '⏸️ Pauza';
+        }
+        
+        function updateParams() {
+            const alpha = parseFloat(document.getElementById('alpha').value);
+            const beta = parseFloat(document.getElementById('beta').value);
+            const rho = parseFloat(document.getElementById('rho').value);
+            const numAnts = parseInt(document.getElementById('numAnts').value);
+            
+            document.getElementById('alphaValue').textContent = alpha.toFixed(1);
+            document.getElementById('betaValue').textContent = beta.toFixed(1);
+            document.getElementById('rhoValue').textContent = rho.toFixed(2);
+            
+            if (simulation) {
+                simulation.updateParams({ alpha, beta, rho, numAnts });
+            }
+        }
+        
+        function hideStory() {
+            document.getElementById('storyPanel').classList.remove('show');
+        }
+    </script>
 </body>
 </html>
